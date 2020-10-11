@@ -1,3 +1,8 @@
+---
+layout: home
+---
+
+
 ## Infrared with improved low cost sensors
 
 You can use the [editor on GitHub](https://github.com/brice-digilus/infrared-page/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
