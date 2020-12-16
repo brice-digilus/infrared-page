@@ -1,14 +1,17 @@
 ---
 layout: page
-title: "Hardware"
-description: "test"
+title: "Hemispherical Infrared - Updates"
+description: "Updates on the hemispherical infrared project"
 ---
 
 
 
-# Hardware
+# Updates
 
-The documentation for MuMuDVB 2.1 can be found on the following pages (HTML version): 
+## December 2020
 
-[HOME](index.html)
+First draft publishing.
+
+
+[HOME](/index.html)
 

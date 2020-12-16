@@ -3,40 +3,73 @@ layout: home
 ---
 
 
-## Infrared with improved low cost sensors
+[//]: # (TODO:)
+[//]: # ( - Results images)
 
-You can use the [editor on GitHub](https://github.com/brice-digilus/infrared-page/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+# Hemispherical Infrared sensor
 
-### Markdown
+## Goal
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+The overall goal of this project is to build an infrared sensor that have an overall view (hemispherical) and can get time sequences of infrared images. All of this using inexpensive off the shelve components.
 
-```markdown
-Syntax highlighted code block
+For the lastest updates please see the [Updates](/Updates) section
 
-# Header 1
-## Header 2
-### Header 3
+## Ok but in real life ?
 
-- Bulleted
-- List
+This is what one of the prototypes look like (more images in the [Photos](/Photos) section)
 
-1. Numbered
-2. List
+![HIrv01](/assets/photos/20201212/DSC8047_400px.jpg)
 
-**Bold** and _Italic_ and `Code` text
+**Why hemispherical, time-sequences ?**
 
-[Link](url) and ![Image](src)
-```
+Most infrared sensors on the market aim for "single-shot" diagnostics. I wanted here to explore more of the idea of an infrared "surveillance"/"overall monitoring" camera. Where information is not in pure resolution but spacial and time dynamics. Also it is interesting to combine it with a Lidar sensor (WIP) so the infrared image can be segmented according to the spacial shape.
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+**Why inexpensive off the shelve ?**
 
-### Jekyll Themes
+Because it's a side project :-). I find interesting to take cheap devices and try to extract the information that they provide. I also want other people to potentially build upon this, so the cheapest and easiest the better while keeping in mind a minimum performance (see the servo choice in the [Hardware](/Hardware) page). Of course there is no fundamental limitation to swap the 32px sensor with a higher resolution besides cost.
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/brice-digilus/infrared-page/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+## Status
 
-### Support or Contact
+Today, the current prototype can 
+ - capture a hemispherical infrared image
+ - store this information in a TIFF with custom metadata for transfer
+ - stitch the images onto a cubemap
+ - compensate for the sensor spherical aberration, non square pixel and vignetting
+ - It also includes some helper tools to choose the angles to be performed and calibrate the sensor.
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+The image capture is done on a raspberry pi, but the code is in C++ and very lightweight so with a very minor rewrite for the I2C and servo communication it can be ported to other arm processors like Teensy, Cortex-Mx, STM32.
+
+The sensor spherical aberration, field of view and pixel aspect ratio have been measured (cf [Hardware](/Hardware) section) and taken into account. For the sensor used these parameters are far from ideal, thus a proper calibration is necessary but only a thermal point source is necessary for this.
+
+Sensor vigneting is also compensated and can be measured through the image overlap (WIP).
+
+Beyond this, I am looking into: 
+ - Using image overlap for super resolution
+ - Using image overlap to train a sensor model to compensate for inhomogeneities
+ - Combine infrared data with lidar measurements to map on a pseudo 3D model the infrared images as well as its visualization with threeJS
+ - More streamlined processing, and video generation
+ - Rework the holder, using only laser cut wood
+
+
+## Looking a bit closer
+
+This prokect site is divided into a few sections to ease reading.
+
+ - For an overall architecture view and hardware consideration please refer to the [Hardware](/Hardware) page.
+ - If you just want to see what it looks like please have a look to the [Photos](/Photos) section.
+ - If you want more information on the sensor calibration and consideration, refer to the [Sensor](/Sensor) section.
+ - Finally if you want to know more about the underlying calculations and the software in general, please have a look to the [Software](/Software) section.
+
+
+
+## A note about licenses
+
+The content of this website is licenced under a Creative commons BY-NC-NA v4.0. The source code is licensed under an Apache 2.0 License.
+Please contact me if you have specific needs that are not consistent with these license
+
+## Contact
+
+Feel free to send comments, ideas, support, to infrared __ at __ bricedv __ . __ net
+
+
