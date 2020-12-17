@@ -1,0 +1,221 @@
+<!--
+   Copyright 2020 Brice Dubost
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+
+Inspired from three.js webgl - materials - environment maps example (MIT License)
+-->
+
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Infrared cubemap</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link type="text/css" rel="stylesheet" href="main.css">
+	</head>
+	<body>
+
+		<div id="info">
+			Infrared Cubemap - with <a href="http://threejs.org" target="_blank" rel="noopener">three.js</a><br/>
+			Just click and drag !
+
+
+		</div>
+
+		<script type="module">
+
+			import * as THREE from './threejs/three.module.js';
+
+			import { GUI } from './threejs/jsm/libs/dat.gui.module.js';
+			import { OrbitControls } from './threejs/jsm/controls/OrbitControls.js';
+
+			var controls, camera, scene, renderer;
+			var cameraCube, sceneCube;
+			var textureCube, textureSphere;
+			var cubeMesh, sphereMesh;
+			var sphereMaterial;
+
+			init();
+			animate();
+
+			function init() {
+
+				// CAMERAS
+
+				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 100000 );
+				camera.position.set( 0, 0, 1000 );
+				cameraCube = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 100000 );
+
+				// SCENE
+
+				scene = new THREE.Scene();
+				sceneCube = new THREE.Scene();
+
+				// Lights
+
+				var ambient = new THREE.AmbientLight( 0xffffff );
+				scene.add( ambient );
+
+				// Textures
+
+				var r = "cube-textures/";
+				var urls = [ r + "posx.png", r + "negx.png",
+							 r + "posy.png", r + "negy.png",
+							 r + "posz.png", r + "negz.png" ];
+
+				textureCube = new THREE.CubeTextureLoader().load( urls );
+				textureCube.format = THREE.RGBFormat;
+				textureCube.mapping = THREE.CubeReflectionMapping;
+				textureCube.encoding = THREE.sRGBEncoding;
+
+				var textureLoader = new THREE.TextureLoader();
+
+
+
+				textureSphere = textureLoader.load( "textures/metal.jpg" );
+				textureSphere.mapping = THREE.SphericalReflectionMapping;
+				textureSphere.encoding = THREE.sRGBEncoding;
+
+				// Materials
+
+
+
+
+
+				var cubeShader = THREE.ShaderLib[ "cube" ];
+				var cubeMaterial = new THREE.ShaderMaterial( {
+					fragmentShader: cubeShader.fragmentShader,
+					vertexShader: cubeShader.vertexShader,
+					uniforms: cubeShader.uniforms,
+					depthWrite: false,
+					side: THREE.BackSide
+				} );
+
+				cubeMaterial.uniforms[ "tCube" ].value = textureCube;
+				Object.defineProperty( cubeMaterial, 'map', {
+
+					get: function () {
+
+						return this.uniforms.tCube.value;
+
+					}
+
+				} );
+
+				// Skybox
+
+				cubeMesh = new THREE.Mesh( new THREE.BoxBufferGeometry( 100, 100, 100 ), cubeMaterial );
+				sceneCube.add( cubeMesh );
+
+				//
+
+				var geometry = new THREE.SphereBufferGeometry( 400.0, 96, 48 );
+				sphereMaterial = new THREE.MeshLambertMaterial( { envMap: textureCube } );
+				sphereMesh = new THREE.Mesh( geometry, sphereMaterial );
+
+				//scene.add( sphereMesh );
+
+				//
+
+				renderer = new THREE.WebGLRenderer();
+				renderer.autoClear = false;
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.body.appendChild( renderer.domElement );
+
+				renderer.gammaOutput = true;
+
+				//
+
+				controls = new OrbitControls( camera, renderer.domElement );
+				controls.minDistance = 500;
+				controls.maxDistance = 2500;
+
+				//
+
+				var params = {
+					Cube: function () {
+
+						cubeMesh.material = cubeMaterial;
+						cubeMesh.visible = true;
+						sphereMaterial.envMap = textureCube;
+						sphereMaterial.needsUpdate = true;
+
+					},
+
+
+					Refraction: false
+				};
+				var gui = new GUI();
+				gui.add( params, 'Cube' );
+
+				gui.add( params, 'Refraction' ).onChange( function ( value ) {
+
+					if ( value ) {
+
+						textureCube.mapping = THREE.CubeRefractionMapping;
+
+					} else {
+
+						textureCube.mapping = THREE.CubeReflectionMapping;
+
+					}
+
+					sphereMaterial.needsUpdate = true;
+
+				} );
+				gui.close();
+
+				window.addEventListener( 'resize', onWindowResize, false );
+
+			}
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				cameraCube.aspect = window.innerWidth / window.innerHeight;
+				cameraCube.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			//
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+
+				render();
+
+			}
+
+			function render() {
+
+				camera.lookAt( scene.position );
+				cameraCube.rotation.copy( camera.rotation );
+
+				renderer.render( sceneCube, cameraCube );
+				renderer.render( scene, camera );
+
+			}
+
+		</script>
+
+	</body>
+</html>
