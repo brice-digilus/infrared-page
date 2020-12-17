@@ -21,6 +21,12 @@ This is what one of the prototypes look like (more images in the [Photos](/Photo
 
 ![HIrv01](/assets/photos/20201212/DSC8047_400px.jpg)
 
+And a self portrait in my living room, one can see the lightbulbs at the top, the water heaters, the TV and the window frames.
+![Living_room](/assets/images/20201217_Living_room.png)
+
+This page is also visible reprojected on a cube [Click here and have fun](/Thermweb)
+
+
 **Why hemispherical, time-sequences ?**
 
 Most infrared sensors on the market aim for "single-shot" diagnostics. I wanted here to explore more of the idea of an infrared "surveillance"/"overall monitoring" camera. Where information is not in pure resolution but spacial and time dynamics. Also it is interesting to combine it with a Lidar sensor (WIP) so the infrared image can be segmented according to the spacial shape.
@@ -66,7 +72,7 @@ This prokect site is divided into a few sections to ease reading.
 ## A note about licenses
 
 The content of this website is licenced under a Creative commons BY-NC-NA v4.0. The source code is licensed under an Apache 2.0 License.
-Please contact me if you have specific needs that are not consistent with these license
+Please contact me if you have specific needs that are not consistent with these licenses.
 
 ## Contact
 

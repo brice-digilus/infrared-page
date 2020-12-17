@@ -23,17 +23,181 @@ The softare is divided in a few components:
  - And some extra notes on [quaternions](#soft_quaternions) and [raspberry pi set-up](#soft_pi_set_up)
 
 
-Here some results examples: TODO
 
+# Angles calculation "library" {#soft_angles_lib}
+
+This library does the heavy lifting between camera and cubemap information, it does the rotation/overlap/homography/interpolation/homogeneity calculations.
+The small program ```demo_display_compute_steps.py``` illustrate several of the concepts below.
+
+Here we will review the key files and functions of this library as well as some results illustration.
+
+## transf_mat.py
+
+This file contains helper functions for quaternions, rotation matrices and homographies. This is typically time consuming to write but easy to use.
+
+The way the transfer is done is that we sample the cubemap views at a certain resolution and for each cubemap view point and for each sensor we compute if there is a corresponding sensor pixel in this cubemap pixel, if yes what is the coordinate. In other words we search the sensors from the cubemap and not the opposite.
+
+We can follow this code from the high level functions to lower level ones
+
+### compute_all_matrices - mostly helper function
+ This function takes the sensor data and the cubemap data, and prepare a few matrices for each cubemap: ```sen_m``` and ```sen_nm```.
+ These matrices contain what sensor is visible at which pixel of the cubemap AND the respective ("float") X and Y coordinates on the sensor image.
+ Then reconstructing the image consists in obtaining the sensor data, and managing the overlapping and interpolation. This function is an helper function that calls ```compute_pixel_mat``` for each sensor for each cubemap. Then merge the data and accumulate the number of sensors visible for each pixel of the map.
+
+
+Taken on several sensors views this is the kind of results that are obtained for the number of overlapping pixels
+
+ ![overlap_map_37_images](/assets/images/20201216_Sensor_Overlap_map.png){:height="60%" width="60%"}
+
+
+
+
+### compute_pixel_mat - key function
+This function computes for a given view of the cubemap and a given sensor position the coordinates of the pixels of the sensor for each pixel of the view.
+        
+
+This function does the following
+ - compute the transfer homography matrix between the sensor view and the cubemap view using ```compute_transfer_mat```. This is where the orientation and field of views of both cameras are taken into account.
+ - this matrix is applied to the coordinates of the cubemap, using an homography transformation. This tells for each point of the cubemap, for this view of the sensor, what is the image coordinate in the sensor view frame of reference.
+ - The distortion of the camera is taken into account computing the "inverse distortion" on the coordinates. Ie where in the sensor this theoretical angle (aka X, Y coordinates on the sensor image) is to be found knowing that the sensor have a certain distortion.
+ - So far the computed coordinates can be outside of the sensor view, for example we can have absolute values > 1 from the previous calculations
+ - We covert the normalized sensor pixel coordinates into "real pixel coordinates"
+
+Note: The results are floating point values, interpolation is done elsewhere when information is merged.
+
+For the case of one sensor view on the front cubemap, we obtain the lookup information to get the sensor pixel data:
+
+![The corresponding X coordinates of sensor 0 in the viewpoint F](/assets/images/20201217_Sensor_x_map_viewF.png){:height="40%" width="40%"}
+![The corresponding Y coordinates of sensor 0 in the viewpoint F](/assets/images/20201217_Sensor_y_map_viewF.png){:height="40%" width="40%"}
+
+
+### compute_cubemap - key function
+
+This function takes sensor data, pre computed coordinate matrices (from ```compute_all_matrices```/```compute_pixel_mat```) and compute the cubemap view of the thermal information.
+
+This function does
+ - the pixel interpolation
+ - sensor overlap management. When several sensors have view on a certain points of the cubemap the resulting information will be weighted versus the distance to the center of each sensor view (the closer to the center the more weight), this allow for a smoother transition.
+ - Sensor homogeneity compensation, currently a model in cos(theta)^4 (where theta is the angle compared to the sensor view principal axis) is used. It is a "simple" vignetting model, for which the parameters are adjusted by hand
+
+NOTE: This is in this function that advanced computation can be done like super resolution and automatic sensor homogeneity correction
+
+This is an example result
+![Living room self portrait](/assets/images/20201217_Living_room.png)
+
+This is WITHOUT vignetting correction
+
+![Living room self portrait no vignette corr](/assets/images/20201217_Living_room_no_vignette.png)
+
+
+### compute_transfer_mat - key function
+
+ This function computes the transfer matrix between two cameras, for example between a viewpoint camera (eg. FRONT) and the camera of the sensor at a specific angle. This matrix is then used to compute the mapping from pixels to pixels.
+
+ Example result for a front view and a front viewing sensor (gamma_i is the rotation about the sensor axis)
+
+```
+Cubemap data (destination camera)     {'alpha': 0, 'beta': 0, 'HFOV': 90, 'VFOV': 90, 'HNPIX': 256, 'VNPIX': 256}
+Sensor data  (source camera)          {'alpha': 0, 'beta_i': 0, 'HFOV': 45.64884636, 'VFOV': 33.6037171, 'gamma_i': 7.36132776, 'distortion': -2.87108226, 'HNPIX': 32, 'VNPIX': 24} 
+
+Camera matrix of the source camera  
+	 2.4  0.0  0.0 
+	 0.0  3.3  0.0 
+	 0.0  0.0  1.0 
+Rotation matrix of the source camera  
+	 1.0 -0.1  0.0 
+	 0.1  1.0  0.0 
+	 0.0  0.0  1.0 
+Inverse of the Rotation matrix of the destination camera
+	 1.0  0.0  0.0 
+	 0.0  1.0  0.0 
+	 0.0  0.0  1.0 
+Inverse of the Camera matrix of the destination camera
+	 1.0  0.0  0.0 
+	 0.0  1.0  0.0 
+	 0.0  0.0  1.0 
+Final transfer matrix   
+	 2.4 -0.3  0.0 
+	 0.4  3.3  0.0 
+	 0.0  0.0  1.0 
+```
+
+
+### gen_cubemap_data - helper function
+
+This is an helper function that generate the camera data for the cubemaps given a number of pixels
+
+Example result:
+```
+{'F': {'alpha': 0, 'beta': 0, 'HFOV': 90, 'VFOV': 90, 'HNPIX': 256, 'VNPIX': 256},
+    'L': {'alpha': 90, 'beta': 0, 'HFOV': 90, 'VFOV': 90, 'HNPIX': 256, 'VNPIX': 256},
+    'R': {'alpha': 270, 'beta': 0, 'HFOV': 90, 'VFOV': 90, 'HNPIX': 256, 'VNPIX': 256},
+    'B': {'alpha': 180, 'beta': 0, 'HFOV': 90, 'VFOV': 90, 'HNPIX': 256, 'VNPIX': 256},
+    'T': {'alpha': 0, 'beta': 90, 'HFOV': 90, 'VFOV': 90, 'HNPIX': 256, 'VNPIX': 256},
+    'Bo': {'alpha': 0, 'beta': -90, 'HFOV': 90, 'VFOV': 90, 'HNPIX': 256, 'VNPIX': 256}}
+```
+
+
+
+## plotting.py
+
+Helper functions to display cubemap data
+
+[Back to top](./)
 
 # Preparation/angle optimization tools {#soft_angles_opt}
 
 
-[Back to top](./)
-# Angles calculation "library" {#soft_angles_lib}
+## robot_optimize_angles.py
+
+Preparation file to select the angles on which the robot will run. It is mostly manual as this is typically run once, but allow to see what is the predicted sensor overlap.
+It is a good file to get familiar with the way the code runs. Some aspects of it are a bit clunky as the code versus configuration should be more separated....
+It also compute the angular displacement of the servo between each step. The spirit is the angle list will be first built in a naive way, per "layer", then arranged to minimize servo displacement.
+This arrangement step could be done automatically but the current needs for automation were to low to justify the efforts.
+
+The goal of this file is to obtain an overlap map to make sure the images are taken in a correct way. This computation is based on the angle library so sensor parameters are taken into account. Here spherical aberration, Horizontal and Vertical Field of view and rotation about its axis. The latter is why the sub images appear tilted in the image below.
+
+This is what a typical result can look like, with 37 images and a 55FOV sensors. This plot shows for each point of the cubemap how many independent images will be taken given a certain list of angle pairs for the servo positions.
+In that case we have a good coverage, and reasonable overlap. 
+
+![overlap_map_37_images](/assets/images/20201216_Sensor_Overlap_map.png)
 
 
+This is the heat map for the calibration list, The center is horizontally at 45 degrees to take into account the prototype mounting.
+
+![overlap_map_calibration](/assets/images/20201216_Sensor_Overlap_map_calibration.png)
+
+It also print the list of angles in a readable format for the servo driving program
+
+```
+Here is your arranged list by hand !!! , you have 37 positions 
+Sensor   0	 Alpha   201.0	 Beta_i   -32.0 	 DAlpha    201.0	 DBeta_i   -32.0
+Sensor   1	 Alpha   241.0	 Beta_i   -32.0 	 DAlpha     40.0	 DBeta_i     0.0
+Sensor   2	 Alpha   281.0	 Beta_i   -32.0 	 DAlpha     40.0	 DBeta_i     0.0
+Sensor   3	 Alpha   321.0	 Beta_i   -32.0 	 DAlpha     40.0	 DBeta_i     0.0
+Sensor   4	 Alpha   361.0	 Beta_i   -32.0 	 DAlpha     40.0	 DBeta_i     0.0
+Sensor   5	 Alpha    41.0	 Beta_i   -32.0 	 DAlpha   -320.0	 DBeta_i     0.0
+Sensor   6	 Alpha    81.0	 Beta_i   -32.0 	 DAlpha     40.0	 DBeta_i     0.0
+Sensor   7	 Alpha   121.0	 Beta_i   -32.0 	 DAlpha     40.0	 DBeta_i     0.0
+Sensor   8	 Alpha   161.0	 Beta_i   -32.0 	 DAlpha     40.0	 DBeta_i     0.0
+Sensor  17	 Alpha   141.0	 Beta_i    -4.0 	 DAlpha    -20.0	 DBeta_i    28.0
+Sensor  16	 Alpha   101.0	 Beta_i    -4.0 	 DAlpha    -40.0	 DBeta_i     0.0
+.......
+# ==== Angles for angles.txt =========
+201.00  -32.00
+241.00  -32.00
+281.00  -32.00
+321.00  -32.00
+361.00  -32.00
+ 41.00  -32.00
+ 81.00  -32.00
+121.00  -32.00
+161.00  -32.00
+.......
+ ```
+
 [Back to top](./)
+
 # Motion and capture software {#soft_motion_and_capt}
 
 
@@ -44,12 +208,33 @@ Here some results examples: TODO
 [Back to top](./)
 # Image analysis software {#soft_image_analysis}
 
+## file_loader.py - Load a single tiff file
+
+This file loads the tiff and parse the metadata to fill the sensor information
+
+## file_to_cube.py - Load a tiff file and convert into cubemap
+
+This file is the one you have to look at to load and convert measurement data.
+
+It will load the tiff file, generate the cubemap camera information, then ask the main library to do the cubemap from the pixel data.
+
+It can display the cubemap in several formats including texture files for [3D visualization]({#soft_cubemap_threejs})
+
+![Living room self portrait](/assets/images/20201217_Living_room.png)
+
+Just for the fun, once I left the room we can see the residual heat on the couch
+
+![Living room self portrait residual](/assets/images/20201217_Living_room_residual.png)
+
 
 [Back to top](./)
 # Display the cubemap using three JS {#soft_cubemap_threejs}
 
+Once a cubemap is obtained it can be displayed in a more interesting way like below
 
+[Click here and have fun](/Thermweb)
 
+Or we can display cubemap videos easily with three JS
 
 [Back to top](./)
 # A few notes on quaternions {#soft_quaternions}
