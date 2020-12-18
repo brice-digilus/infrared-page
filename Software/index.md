@@ -200,6 +200,19 @@ Sensor  16	 Alpha   101.0	 Beta_i    -4.0 	 DAlpha    -40.0	 DBeta_i     0.0
 
 # Motion and capture software {#soft_motion_and_capt}
 
+The software is C/C++ code, it expect the Robotis SDK to be properly installed, a modified version of the Melexis library is shipped with the code.
+
+I use ID 20 for the bottom servo, ID 21 for the top servo. They are left at the default speed of 1Mb/s. If you want to change servo specific parameters, see ```examples/DXL_info.h``` and ```examples/DXL_info.h```
+
+The code is in the infrared-capture repository and does the interface with the robotis and melexis librairies.
+
+It does the motion control, check motion convergence, clear sensor data, capture infrared image, store it and move again.
+
+The default folder for image storage is ```../data/images_servo``` and the main program is ```Servo_360_DXL```
+
+The code would need some clean up for more "configurability" but is pretty much self explanatory.
+
+It also includes a small piece of code to change the i2c address of the infrared sensor if necessary (please read the code and the datasheet before using it !)
 
 [Back to top](./)
 # Sensor calibration software {#soft_sensor_calibration}
