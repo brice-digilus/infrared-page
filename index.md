@@ -22,7 +22,9 @@ This is what the prototypes look like (more images in the [Photos](/Photos) sect
 And a self portrait in my living room, one can see the lightbulbs at the top, the water heaters, the TV and the window frames.
 ![Living_room](/assets/images/20201217_Living_room.png)
 
-To know more about cubemap projection please read this [wikipedia article](https://en.wikipedia.org/wiki/Cube_mapping)
+To know more about cubemap projection please read this [wikipedia article](https://en.wikipedia.org/wiki/Cube_mapping), the example below comes from [Arieee](https://en.wikipedia.org/wiki/Cube_mapping#/media/File:Skybox_example.png) CC BY-SA 3.0
+
+![Cubemap example](https://upload.wikimedia.org/wikipedia/commons/b/b4/Skybox_example.png){:height="40%" width="40%"}
 
 This page is also visible reprojected on a cube [Click here and have fun](/Thermweb)
 
