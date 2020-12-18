@@ -5,7 +5,7 @@ description: "Software documentation for hemispherical infrared camera. From ang
 ---
 
 
-Note: This section is WIP
+
 
 
 # Overview of the software
@@ -128,7 +128,7 @@ Final transfer matrix
 This is an helper function that generate the camera data for the cubemaps given a number of pixels
 
 Example result:
-```
+```python
 {'F': {'alpha': 0, 'beta': 0, 'HFOV': 90, 'VFOV': 90, 'HNPIX': 256, 'VNPIX': 256},
     'L': {'alpha': 90, 'beta': 0, 'HFOV': 90, 'VFOV': 90, 'HNPIX': 256, 'VNPIX': 256},
     'R': {'alpha': 270, 'beta': 0, 'HFOV': 90, 'VFOV': 90, 'HNPIX': 256, 'VNPIX': 256},
@@ -204,6 +204,92 @@ Sensor  16	 Alpha   101.0	 Beta_i    -4.0 	 DAlpha    -40.0	 DBeta_i     0.0
 [Back to top](./)
 # Sensor calibration software {#soft_sensor_calibration}
 
+## The concept
+
+The idea is to image a point source under a set of angles, then knowing the angles at which we imaged it (thanks to the servos) we can fit the camera parameters.
+
+Below you can find an image of the thermal source I used (a thermoelectric element plugged on a phone charger) in visible and with a Seek infrared camera.
+
+![Thermal "point" source](/assets/photos/20201218_calibration_source_VIS.jpg){:height="40%" width="40%"}
+![Thermal "point" source](/assets/photos/20201218_calibration_source_IR.jpg){:height="40%" width="40%"}
+
+This is the same source viewed by the melexis sensor
+
+
+![Thermal "point" source imaged by the sensor](/assets/images/20201218_Calibration_single_image.png){:height="40%" width="40%"}
+
+The parameters we adjust are the following:
+
+| Parameter  | Description |
+| ----------- | ----------- |
+| par_dh  | Horizontal "center" this one is due to the alignment between the camera and the source and can be ignored  |
+| par_dv  | Vertical "center" this one is due to the alignment between the camera and the source and can be ignored |
+| par_dz  | Rotation about the sensor axis. This one is due to how the sensor is mounted and soldered. Without a specifically made holder it can be quite high.  |
+| par_HFOV  | Camera horizontal field of view  |
+| par_VFOV  | Camera vertical field of view  |
+| d_a1  | Camera spherical aberration  |
+
+## camera_calibration.py
+
+This file contains the camera calibration program. It uses curve_fit from the scipy.optimize package.
+
+The center estimation (```sensors_find_maxima```) is assuming it's a gaussian hot spot to perform sub pixel estimation and use the ```<x.P(X)>``` value where X is the pixel position and P(X) is the normalized itensity
+
+It also implement the distance function and the associated calculations in ```guess_images_centers_quat```
+
+## results
+
+The distance reported in these results is the average distance between the maximum centers and their expected position in pixels.
+Without any fit beside the centers, the average distance is 1.4px, after fit it is 0.17px
+
+The fit results are:
+
+
+| Parameter  | Fit | Expected value|  Description |
+| ----------- | ----------- | ----------- |----------- |
+| par_dz    | 7.45  | 0  |Rotation about the sensor axis. This one is due to how the sensor is mounted and soldered. Without a specifically made holder it can be quite high.  |
+| par_HFOV  | 46.1  | 55  |Camera horizontal field of view  |
+| par_VFOV  | 33.8  | 35  | Camera vertical field of view  |
+| d_a1      | -2.33  | 0  | Camera spherical aberration  |
+
+**One can notice that the horizontal field of view is pretty different from expected, and the pixels are not square. The spherical distortion is non negligible for stitching purposes. The remaining distance is well in the subpixel range and can be due to either the difficulty to estimate the center of the source or the mechanical imprecision**
+
+For the camera distortion, this is the function used
+```python
+def camera_distortion(x,y,a1):
+    r2 = x**2+y**2
+    a1 /= 10000
+    xd = (1 + a1*r2)*x
+    yd = (1 + a1*r2)*y
+    return xd,yd
+```
+
+Below you can find a few illustrations of the results, the scatter plot corresponds to the XY distance for each measurement between expected and estimated. The cross plot is an illustration of the same in the image plane.
+
+```Dz = 0; HFOV = 55; VFOV = 35; a1 = 0``` : No calibration
+
+![Scatter posonly](/assets/images/20201218_Calibration_POS_OK_scatter.png){:height="45%" width="45%"}
+![Scatter posonly](/assets/images/20201218_Calibration_POS_OK_cross_plot.png){:height="75%" width="75%"}
+
+```Dz = 7.52; HFOV = 55; VFOV = 35; a1 = 0``` : Sensor rotation calibrated
+
+![Scatter posonly](/assets/images/20201218_Calibration_FOV_dist_scatter.png){:height="45%" width="45%"}
+![Scatter posonly](/assets/images/20201218_Calibration_FOV_dist_cross_plot.png){:height="75%" width="75%"}
+
+
+```Dz = 7.52; HFOV = 46.1; VFOV = 33.7; a1 = 0``` : Sensor rotation, Field of View calibrated
+
+![Scatter posonly](/assets/images/20201218_Calibration_distortion_scatter.png){:height="45%" width="45%"}
+![Scatter posonly](/assets/images/20201218_Calibration_distortion_cross_plot.png){:height="75%" width="75%"}
+
+Final fit results
+```Dz = 7.45; HFOV = 46.1; VFOV = 33.8; a1 = -2.33``` : Everything (Sensor rotation, Field of View, distortion) calibrated
+
+![Scatter posonly](/assets/images/20201218_Calibration_final_scatter.png){:height="45%" width="45%"}
+![Scatter posonly](/assets/images/20201218_Calibration_final_cross_plot.png){:height="75%" width="75%"}
+
+
+One can see the pretty impressive difference and the value of this calibration work !
 
 [Back to top](./)
 # Image analysis software {#soft_image_analysis}
@@ -218,7 +304,7 @@ This file is the one you have to look at to load and convert measurement data.
 
 It will load the tiff file, generate the cubemap camera information, then ask the main library to do the cubemap from the pixel data.
 
-It can display the cubemap in several formats including texture files for [3D visualization]({#soft_cubemap_threejs})
+It can display the cubemap in several formats including texture files for [3D visualization](#soft_cubemap_threejs)
 
 ![Living room self portrait](/assets/images/20201217_Living_room.png)
 
@@ -314,7 +400,7 @@ These are the sections of the generated TIFF file in order. Tiff files can be co
 
 As simple as this
 
-```
+```python
 from PIL import Image
 img = Image.open('xxx.tiff')
 metadata = img.tag_v2.get(270,"").replace("\x00","")
