@@ -13,7 +13,7 @@ layout: home
 
 The overall goal of this project is to build an infrared sensor that have an overall view (hemispherical) and can get time sequences of infrared images. All of this using inexpensive off the shelve components.
 
-For the lastest updates please see the [Updates](/Updates) section
+For the lastest updates please see the [Updates](/Updates) section. For the code repositories, please click view on github above !!!
 
 ## Ok but in real life ?
 
@@ -23,6 +23,8 @@ This is what one of the prototypes look like (more images in the [Photos](/Photo
 
 And a self portrait in my living room, one can see the lightbulbs at the top, the water heaters, the TV and the window frames.
 ![Living_room](/assets/images/20201217_Living_room.png)
+
+To know more about cubemap projection please read this [wikipedia article](https://en.wikipedia.org/wiki/Cube_mapping)
 
 This page is also visible reprojected on a cube [Click here and have fun](/Thermweb)
 
