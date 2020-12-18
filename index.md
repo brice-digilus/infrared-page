@@ -3,9 +3,6 @@ layout: home
 ---
 
 
-[//]: # (TODO:)
-[//]: # ( - Results images)
-
 
 # Hemispherical Infrared sensor
 
@@ -17,9 +14,10 @@ For the lastest updates please see the [Updates](/Updates) section. For the code
 
 ## Ok but in real life ?
 
-This is what one of the prototypes look like (more images in the [Photos](/Photos) section)
+This is what the prototypes look like (more images in the [Photos](/Photos) section)
 
-![HIrv01](/assets/photos/20201212/DSC8047_400px.jpg)
+![HIrv01](/assets/photos/20201212/DSC8047_400px.jpg){:height="45%" width="45%"}
+![HIrv02](/assets/photos/20201212/DSC8125_square.jpg){:height="45%" width="45%"}
 
 And a self portrait in my living room, one can see the lightbulbs at the top, the water heaters, the TV and the window frames.
 ![Living_room](/assets/images/20201217_Living_room.png)
