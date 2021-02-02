@@ -12,6 +12,7 @@ The goal here was to arrive as a good working prototype relatively quickly so ob
 
 This page contains a few sections covering the different aspects, I would advise to start with the [overall architecture](#hard_overall) section and dig further in the topic that are of interest for you.
 
+ - [Hold it tight ?](#hard_box)
  - [Motion ?](#hard_servos)
  - [Got power ?](#hard_power)
  - [Got compute ?](#hard_computation)
@@ -29,14 +30,24 @@ This is the overall hardware view architecture.
 
 The current choice for the component is the following
  - Compute: Raspberry pi 0/3
- - Power: Dual voltage rechargeable battery. 12V/5V
- - Power/data merge: Hand soldered or [interbotics power hub](https://www.trossenrobotics.com/6-port-ax-mx-power-hub) or [robotis SMPS2Dynamixel](https://www.robotis.us/smps2dynamixel/)
+ - Time: qwiic sparkfun RTC
+ - Power: Dual voltage rechargeable battery. 12V/5V (TalentCell 12V 3000mAh)
+ - Power/data merge: Hand soldered/screw plug or [interbotics power hub](https://www.trossenrobotics.com/6-port-ax-mx-power-hub) or [robotis SMPS2Dynamixel](https://www.robotis.us/smps2dynamixel/)
  - Infrared sensor: [Melexis MLX90640 on a sparkfun board](https://www.sparkfun.com/products/14844)
  - Potential lidar: TfMini serial version (the i2c version was burning the Melexis on the i2c bus) [Sparkfun link](https://www.sparkfun.com/products/16977)
  - Servos: Robotis [Dynamixel MX-12W](https://www.robotis.us/dynamixel-mx-12w/)
  - Communication for servo: [Robotis U2D2](https://www.robotis.us/u2d2/)
 
 This is a pan tilt system with communication, i2c, serial and logging. The rationale on the different components is quickly explained below.
+
+[Back to top](./)
+# Hold it together {#hard_box}
+
+PICTURE
+![Block_descr_overall](/assets/images/Therm_overall_invert.png)
+
+You can download the dxf for laser cutting (3mm medium, 200um trace) [here](/Hardware/CAD/20210121_infrared_cam_box_And_holder.zip)
+
 
 [Back to top](./)
 # Servos {#hard_servos}
