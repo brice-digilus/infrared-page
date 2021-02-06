@@ -46,7 +46,18 @@ This is a pan tilt system with communication, i2c, serial and logging. The ratio
 PICTURE
 ![Block_descr_overall](/assets/images/Therm_overall_invert.png)
 
-You can download the dxf for laser cutting (3mm medium, 200um trace) [here](/Hardware/CAD/20210121_infrared_cam_box_And_holder.zip)
+You can download the dxf for laser cutting (3mm medium, 200um trace) [here](/Hardware/CAD/20210121_infrared_cam_box_And_holder.zip) 
+
+This is what the box without sensor look like (more images in the [Photos](/Photos) section)
+![HIrv02](/assets/photos/202102xx/DSC8321.jpg){:height="60%" width="60%"}
+
+![HIrv02](/assets/photos/202102xx/DSC8324.jpg){:height="60%" width="60%"}
+
+![HIrv02](/assets/photos/202102xx/DSC8326.jpg){:height="60%" width="60%"}
+
+The bottom box is pretty large to be flexible and with a middle shelves with holes for cable routing.
+The design of the front door can be improved as sliding it can proove difficult at times.
+
 
 
 [Back to top](./)

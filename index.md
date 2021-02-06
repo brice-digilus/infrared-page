@@ -16,8 +16,8 @@ For the lastest updates please see the [Updates](/Updates) section. For the code
 
 This is what the prototypes look like (more images in the [Photos](/Photos) section)
 
-![HIrv01](/assets/photos/20201212/DSC8047_400px.jpg){:height="45%" width="45%"}
-![HIrv02](/assets/photos/20201212/DSC8125_square.jpg){:height="45%" width="45%"}
+![HIrv01](/assets/photos/20201212/DSC8047_400px.jpg){:height="35%" width="35%"}
+![HIrv02](/assets/photos/202102xx/DSC9074.jpg){:height="35%" width="52.5%"}
 
 And a self portrait in my living room, one can see the lightbulbs at the top, the water heaters, the TV and the window frames.
 ![Living_room](/assets/images/20201217_Living_room.png)
