@@ -31,7 +31,7 @@ This page is also visible reprojected on a cube [Click here and have fun](/Therm
 
 **Why hemispherical, time-sequences ?**
 
-Most infrared sensors on the market aim for "single-shot" diagnostics. I wanted here to explore more of the idea of an infrared "surveillance"/"overall monitoring" camera. Where information is not in pure resolution but spacial and time dynamics. Also it is interesting to combine it with a Lidar sensor (WIP) so the infrared image can be segmented according to the spacial shape.
+Most infrared sensors on the market aim for "single-shot" diagnostics. I wanted here to explore more of the idea of an infrared "surveillance"/"overall monitoring" camera. Where information is not in pure resolution but spacial and time dynamics. Also it is interesting to combine it with a Lidar sensor (WIP) so the infrared image can be segmented according to the spacial shape. It's a curiosity project around infrared imaging and it is also a curiosity project around pushing low cost sensors. I think it can have applications in building science or any big place where one is curious about heat flow...
 
 **Why inexpensive off the shelve ?**
 

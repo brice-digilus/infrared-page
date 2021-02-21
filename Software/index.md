@@ -348,7 +348,7 @@ Quaternions are described in various places, here you can find a link on the key
 [Some notes about quaternions](/assets/pdf/Angles and rotations.pdf)
 
 [Back to top](./)
-# Our TIFF storage and metadata {#soft_tiff}
+# TIFF storage and metadata {#soft_tiff}
 
 In order to store the angles and the imaging conditions, we add metadata to the TIFF file containing the raw measurements. The two following sections describe the metadata syntax as well as where is the metadata stored in the TIFF file.
 
@@ -433,6 +433,63 @@ edit ```/boot/config.txt``` and adjust the i2c_frequency (200kHz worked fine for
 if using lidar on serial, I run also this command to disable the bluetooth ```sudo systemctl disable hciuart```
 
 Note: for remote display with rdp ```sudo apt purge realvnc-vnc-server && sudo apt install xrdp```. Client wise it works on linux/windows and iPad but not all apps (iteleport works fine)
+
+
+## Raspberry pi client and AP simultaneously
+
+As this is meant to be a portable device, having an AP mode on the PI can be useful. Fortunately the controller can do both like in [this tutorial](https://blog.thewalr.us/2017/09/26/raspberry-pi-zero-w-simultaneous-ap-and-managed-mode-wifi/).
+
+The key point that is different from the tutorial is the fact that both interfaces have to be up in a certain order and I use ```/etc/network/interfaces``` to do that, and I also have set up two potential wifi to connect to (house and phone)
+
+```
+source-directory /etc/network/interfaces.d
+
+auto lo
+auto ap0
+auto wlan0
+iface lo inet loopback
+
+allow-hotplug ap0
+iface ap0 inet static
+    address 192.168.10.1
+    netmask 255.255.255.0
+    hostapd /etc/hostapd/hostapd.conf
+
+allow-hotplug wlan0
+iface wlan0 inet manual
+    pre-up ifup ap0
+    wpa-roam /etc/wpa_supplicant/wpa_supplicant.conf
+    post-down ifdown ap0
+iface AP1 inet dhcp
+iface AP2 inet dhcp
+```
+
+Get your mac with ```iw dev``` and set up ```/etc/udev/rules.d/70-persistent-net.rules```
+```
+SUBSYSTEM=="ieee80211", ACTION=="add|change", ATTR{macaddress}=="b8:27:eb:dc:ec:7c", KERNEL=="phy0",   RUN+="/sbin/iw phy phy0 interface add ap0 type __ap",   RUN+="/bin/ip link set ap0 address b8:27:eb:dc:ec:7c
+```
+
+I followed the tutorial for ```/etc/dnsmasq.conf```, ```/etc/default/hostapd```,```/etc/hostapd/hostapd.conf```. Concerning the ```/etc/wpa_supplicant/wpa_supplicant.conf``` I set it up this way.
+
+```
+country=US
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+
+network={
+    ssid="SSID_1"
+    psk="PAAASSSSSS1"
+    id_str="AP1"
+}
+network={
+    ssid="SSID_2"
+    psk="PAAASSSSSS2"
+    id_str="AP2"
+}
+```
+
+
+
 
 
 [Back to top](./)

@@ -140,8 +140,6 @@ It can be interesting to merge infrared data with depth/geometry data. I am curr
 
 A lot can be improved here, pretty much everything but this is a functional base.
 
-The mounting is not great, and I think it can be fun to use laser cut wood to make a new holder. You can find a few thoughts here: [Wood holder draft](/assets/pdf/Wood box.pdf)
-
 The power system is not great. I think it will be simpler to use a standard rechargeable 5V battery as the market is full of inexpensive ones and design a small power board that can do the voltage conversion, includes the chip for the TTL bus and the connections to the uC, sensors and servo. The way these batteries on/off switch works is also weird. If it's on OFF **BUT** charging, everything is powered.
 
 Other servo options can be explored, just to name a few: 
