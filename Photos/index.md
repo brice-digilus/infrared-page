@@ -1,14 +1,14 @@
 ---
 layout: page
 title: "Hemispherical Infrared - Photos"
-description: "Here you can find a few pictures of my current prototypes"
+description: "Here you can find a few pictures of the prototypes"
 ---
 
 
 
 # Photos
 
-Here you can find a few pictures of the current prototypes
+A few pictures !
 
  - [Wood box version](#wood_box)
  - [Glue and screws version](#glue_and_screws)
@@ -57,7 +57,7 @@ Here you can find a few pictures of the current prototypes
 [Back to top](./)
 
 ## v0.0 {#shaky}
-Non functional, servos are not precize enough
+Non functional, servos are not precise enough
 
 ![HIrv00](/assets/photos/20201212/DSC7925.jpg)
 

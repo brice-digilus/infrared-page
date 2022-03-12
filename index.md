@@ -10,6 +10,14 @@ layout: home
 
 The overall goal of this project is to build an infrared sensor that have an overall view (hemispherical) and can get time sequences of infrared images. All of this using inexpensive off the shelve components.
 
+This project is a proof of concept to explore with thermography. I believe that by measuring over extended time periods and with a large field of view, one can get an understanding of a building behavior that is complementary from spot measurements. I think by correlating with other parameters like outside temperature and heating/cooling load one can infer general characteristics and especially weak points that impede the energy performance of the enveloppe.
+
+In general with these super cheap infrared sensors I was quite happy about the results. I believe with some improvements in the processing and potentially slightly more expensive sensors one could expect very good results.
+
+The main lesson is the stitching, good characterization of the optical response of the sensor was key. This can be done without complicated targets. A single point source of heat can do it, thanks to the motorization.
+
+This project is on hold and given for curiosity or for anyone that want to take it further. Feel free to contact me if any questions/comments/want to discuss need arise.
+
 For the lastest updates please see the [Updates](/Updates) section. For the code repositories, please click view on github above !!!
 
 ## Ok but in real life ?
