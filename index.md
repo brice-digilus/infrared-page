@@ -6,7 +6,7 @@ layout: home
 
 # Hemispherical Infrared sensor
 
-## Goal
+## Goal/summary
 
 The overall goal of this project is to build an infrared sensor that have an overall view (hemispherical) and can get time sequences of infrared images. All of this using inexpensive off the shelve components.
 
@@ -16,9 +16,11 @@ In general with these super cheap infrared sensors I was quite happy about the r
 
 The main lesson is the stitching, good characterization of the optical response of the sensor was key. This can be done without complicated targets. A single point source of heat can do it, thanks to the motorization.
 
+More details can be found on the various sections of the website.
+
 This project is on hold and given for curiosity or for anyone that want to take it further. Feel free to contact me if any questions/comments/want to discuss need arise.
 
-For the lastest updates please see the [Updates](/Updates) section. For the code repositories, please click view on github above !!!
+For the lastest updates please see the [Updates](/Updates) section. 
 
 ## Ok but in real life ?
 

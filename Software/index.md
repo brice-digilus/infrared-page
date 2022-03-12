@@ -13,6 +13,10 @@ description: "Software documentation for hemispherical infrared camera. From ang
 In this section will be covered the software aspects of this project. There will be a lot of stitching, camera parameters estimation as well as communication with the sensor and the servos.
 I hope this software can be useful to you, as such it is released under an Apache 2.0 License. Feel free to reach out if any part here is confusing or just to share ideas.
 
+Software repositories are available here: 
+ - [Python analysis](https://github.com/brice-digilus/Infrared_Analysis)
+ - [Driver code](https://github.com/brice-digilus/Infrared_Capture)
+
 The softare is divided in a few components: 
  - A [angle calculation "library" (in python)](#soft_angles_lib) that is meant to go from the camera viewpoints to cubemaps and vice versa.
  - A set of [preparation tools (in python)](#soft_angles_opt) that allow to select the capturing angles for the hemispherical camera
